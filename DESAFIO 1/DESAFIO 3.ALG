@@ -60,77 +60,102 @@ fimregistro
 
 Var
 
-regioes: vetor[1..5] de caractere
+nomes_regioes: vetor[1..MAX_REGIOES] de caractere
+matriz_distancias: vetor[1..MAX_REGIOES, 1..MAX_REGIOES] de inteiro
 tabela: vetor[1..5, 1..5] de inteiro
 produtos : vetor[1..max_produtos] de Entrega
 i, j: inteiro
 
-procedimento mostrar_tabela
-inicio
-   // Cabecalho
-   escreva("Origem/Destino":15)
-   para j de 1 ate 5 faca
-      escreva(regioes[j]:8)
-   fimpara
-   escreval("")
 
-   // Linhas
-   para i de 1 ate 5 faca
-      escreva(regioes[i]:15)
-      para j de 1 ate 5 faca
-         escreva(tabela[i,j]:8)
-      fimpara
-      escreval("")
-   fimpara
+procedimento inicializar_regioes
+inicio
+
+   nomes_regioes[CENTRO] <- "Centro"
+   nomes_regioes[NORTE] <- "Norte"
+   nomes_regioes[SUL] <- "Sul"
+   nomes_regioes[LESTE] <- "Leste"
+   nomes_regioes[OESTE] <- "Oeste"
+
+fimprocedimento
+
+procedimento inicializar_matriz
+var
+
+   i,j:inteiro
+
+inicio
+
+    matriz_distancias[CENTRO, NORTE] <- 12
+    matriz_distancias[CENTRO, SUL] <- 15
+    matriz_distancias[CENTRO, LESTE] <- 10
+    matriz_distancias[CENTRO, OESTE] <- 14
+    matriz_distancias[NORTE, SUL] <- 25
+    matriz_distancias[NORTE, LESTE] <- 18
+    matriz_distancias[NORTE, OESTE] <- 20
+    matriz_distancias[SUL, LESTE] <- 16
+    matriz_distancias[SUL, OESTE] <- 19
+    matriz_distancias[LESTE, OESTE] <- 22
+    
+    para i de 1 ate MAX_REGIOES faca
+         para j de 1 ate MAX_REGIOES faca
+              se (i=j) entao
+                 matriz_distancias[i,j]<- 0
+              senao
+                 se (i>j) entao
+                    matriz_distancias[i,j]<-matriz_distancias[j,i]
+                 fimse
+              fimse
+         fimpara
+    fimpara
+    
 fimprocedimento
 
 
+procedimento exibir_matriz_distancias
+var
+i,j,r,maior,menor,soma,quantidade : inteiro
+inicio
+   maior<-0
+   menor<-0
+   soma<-0
+   quantidade<-0
+    para r de 1 ate MAX_REGIOES faca
+      escreva(r, "-", nomes_regioes[r], "  ")
+   fimpara
+   escreval("")
+   escreva("     ")
+   para j de 1 ate MAX_REGIOES faca
+      escreva(j:6)
+   fimpara
+   escreval("")
+   
+   para i de 1 ate MAX_REGIOES faca
+        escreva(i:3,"  ")
+        para j de 1 ate MAX_REGIOES faca
+             escreva(matriz_distancias[i, j]:6)
+             
+             se (matriz_distancias[i,j]>maior) entao
+                maior<-matriz_distancias[i,j]
+             fimse
+             
+             se (i <> j) entao
+                soma <- soma + matriz_distancias[i, j]
+                quantidade <- quantidade + 1
 
+                se (matriz_distancias[i, j] > 0) e ((menor = 0) ou (matriz_distancias[i, j] < menor)) entao
+                   menor <- matriz_distancias[i, j]
+                fimse
+                
+             fimse
+        fimpara
+        escreval("")
+    fimpara
+fimprocedimento
 Inicio
+  inicializar_regioes
+  inicializar_matriz
+  exibir_matriz_distancias
 
-   // Nomes das regioes (1=Centro, 2=Norte, 3=Sul, 4=Leste, 5=Oeste)
-   regioes[1] <- "Centro"
-   regioes[2] <- "Norte"
-   regioes[3] <- "Sul"
-   regioes[4] <- "Leste"
-   regioes[5] <- "Oeste"
-
-   // Centro
-   tabela[1,1] <- 0
-   tabela[1,2] <- 12
-   tabela[1,3] <- 15
-   tabela[1,4] <- 10
-   tabela[1,5] <- 14
-
-   // Norte
-   tabela[2,1] <- 12
-   tabela[2,2] <- 0
-   tabela[2,3] <- 25
-   tabela[2,4] <- 18
-   tabela[2,5] <- 20
-
-   // Sul
-   tabela[3,1] <- 15
-   tabela[3,2] <- 25
-   tabela[3,3] <- 0
-   tabela[3,4] <- 16
-   tabela[3,5] <- 19
-
-   // Leste
-   tabela[4,1] <- 10
-   tabela[4,2] <- 18
-   tabela[4,3] <- 16
-   tabela[4,4] <- 0
-   tabela[4,5] <- 22
-
-   // Oeste
-   tabela[5,1] <- 14
-   tabela[5,2] <- 20
-   tabela[5,3] <- 19
-   tabela[5,4] <- 22
-   tabela[5,5] <- 0
-
-   mostrar_tabela
    
    
    
