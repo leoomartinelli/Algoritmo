@@ -48,7 +48,7 @@ Entrega = registro
   origem : inteiro
   destino : inteiro
   peso : real
-  valorMErcadoria : real
+  valor_mercadoria : real
   prioridade : inteiro
   distancia : real
   status : inteiro
@@ -62,9 +62,9 @@ Var
 
 nomes_regioes: vetor[1..MAX_REGIOES] de caractere
 matriz_distancias: vetor[1..MAX_REGIOES, 1..MAX_REGIOES] de inteiro
-tabela: vetor[1..5, 1..5] de inteiro
-produtos : vetor[1..max_produtos] de Entrega
-i, j: inteiro
+entregas: vetor[1..MAX_ENTREGAS] de entrega
+qtd_entregas : inteiro
+percurso: vetor[1..MAX_PERCURSO] de inteiro
 
 
 procedimento inicializar_regioes
@@ -151,10 +151,156 @@ inicio
         escreval("")
     fimpara
 fimprocedimento
+//////////////////////////////////////////// #LEITURAS
+procedimento ler_codigo_novo(var codigo: inteiro)
+var
+
+   posicao: inteiro
+
+inicio
+   repita
+      escreva("Codigo da entrega (numero positivo): ")
+      leia(codigo)
+      posicao <- localizar_entrega(codigo)
+      
+      se (codigo <= 0) entao
+         escreval("ERRO: o codigo deve ser maior que zero.")
+      senao
+         se (posicao <> NAO_ENCONTRADO) entao
+            escreval("ERRO: codigo ", codigo, " ja cadastrado (codigo duplicado).")
+         fimse
+      fimse
+   ate (codigo > 0) e (posicao = NAO_ENCONTRADO)
+
+fimprocedimento
+
+
+
+procedimento ler_destinatario(var nome: caractere)
+inicio
+   repita
+      escreva("Nome/descricao do destinatario: ")
+      leia(nome)
+      se (nome = "") entao
+         escreval("ERRO: o destinatario nao pode ficar em branco.")
+      fimse
+   ate (nome <> "")
+fimprocedimento
+
+procedimento ler_origem_destino(var orig, dest: inteiro)
+inicio
+   repita
+      ler_regiao("Regiao de ORIGEM", orig)
+      ler_regiao("Regiao de DESTINO", dest)
+      se (orig = dest) entao
+         escreval("ERRO: origem e destino nao podem ser a mesma regiao.")
+      fimse
+   ate (orig <> dest)
+fimprocedimento
+
+
+procedimento ler_peso(var peso_lido: real)
+inicio
+   repita
+      escreva("Peso da carga (kg): ")
+      leia(peso_lido)
+      se (peso_lido <= 0) ou (peso_lido > PESO_MAXIMO) entao
+         escreval("ERRO: peso invalido. Deve ser maior que 0 e no maximo ", PESO_MAXIMO, " kg.")
+      fimse
+   ate (peso_lido > 0) e (peso_lido <= PESO_MAXIMO)
+fimprocedimento
+
+
+procedimento ler_valor(var valor_lido: real)
+inicio
+   repita
+      escreva("Valor da mercadoria (R$): ")
+      leia(valor_lido)
+      se (valor_lido < 0) entao
+         escreval("ERRO: o valor da mercadoria nao pode ser negativo.")
+      fimse
+   ate (valor_lido >= 0)
+fimprocedimento
+
+
+procedimento ler_prioridade(var prior: inteiro)
+inicio
+   repita
+      escreva("Prioridade (1-Urgente  2-Prioritaria  3-Normal): ")
+      leia(prior)
+      se (prior < URGENTE) ou (prior > NORMAL) entao
+         escreval("ERRO: prioridade inexistente.")
+      fimse
+   ate (prior >= URGENTE) e (prior <= NORMAL)
+fimprocedimento
+
+procedimento ler_regiao(mensagem: caractere; var regiao: inteiro)
+inicio
+   repita
+      escreval(mensagem, ":")
+      exibir_legenda_regioes
+      escreva("Codigo da regiao: ")
+      leia(regiao)
+      se (regiao < 1) ou (regiao > MAX_REGIOES) entao
+         escreval("ERRO: regiao inexistente. Informe um codigo de 1 a ", MAX_REGIOES, ".")
+      fimse
+   ate (regiao >= 1) e (regiao <= MAX_REGIOES)
+fimprocedimento
+
+procedimento exibir_legenda_regioes
+var
+   r: inteiro
+inicio
+   para r de 1 ate MAX_REGIOES faca
+      escreva(r, "-", nomes_regioes[r], "  ")
+   fimpara
+   escreval("")
+fimprocedimento
+
+procedimento cadastrar_entrega
+var
+   novo_codigo, nova_origem, novo_destino, nova_prioridade: inteiro
+   novo_destinatario: caractere
+   novo_peso, novo_valor: real
+   
+inicio
+
+se (qtd_entregas>=MAX_ENTREGAS) entao
+   escreval("Erro, capacidade maxima:",MAX_ENTREGAS,"")
+senao
+
+      ler_destinatario(novo_destinatario)
+      ler_origem_destino(nova_origem, novo_destino)
+      ler_peso(novo_peso)
+      ler_valor(novo_valor)
+      ler_prioridade(nova_prioridade)
+
+      qtd_entregas <- qtd_entregas + 1
+      entregas[qtd_entregas].codigo <- novo_codigo
+      entregas[qtd_entregas].destinatario <- novo_destinatario
+      entregas[qtd_entregas].origem <- nova_origem
+      entregas[qtd_entregas].destino <- novo_destino
+      entregas[qtd_entregas].peso <- novo_peso
+      entregas[qtd_entregas].valor_mercadoria <- novo_valor
+      entregas[qtd_entregas].prioridade <- nova_prioridade
+      entregas[qtd_entregas].distancia <- matriz_distancias[nova_origem, novo_destino]
+      entregas[qtd_entregas].status <- AGUARDANDO
+
+      
+   
+      escreval("")
+      escreval("Entrega cadastrada com sucesso!")
+      escreval("Distancia obtida da matriz: ", entregas[qtd_entregas].distancia, " km")
+      escreval("Entregas cadastradas: ", qtd_entregas, " de ", MAX_ENTREGAS)
+fimse
+fimprocedimento
 Inicio
   inicializar_regioes
   inicializar_matriz
   exibir_matriz_distancias
+  cadastrar_entrega
+  
+
 
    
    
