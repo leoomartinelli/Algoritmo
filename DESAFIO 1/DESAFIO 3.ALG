@@ -424,6 +424,21 @@ inicio
    fimse
 fimprocedimento
 
+procedimento consultar_entrega
+var
+   codigo_busca, posicao: inteiro
+inicio
+   escreval("============ CONSULTAR ENTREGA ============")
+   escreva("Informe o codigo da entrega: ")
+   leia(codigo_busca)
+   posicao <- localizar_entrega(codigo_busca)
+   se (posicao = NAO_ENCONTRADO) entao
+      escreval("Entrega nao encontrada.")
+   senao
+      exibir_entrega(posicao)
+   fimse
+fimprocedimento
+
 procedimento exibir_menu
 inicio
    limpatela
@@ -432,6 +447,7 @@ inicio
    escreval("==================================================")
    escreval(" 1 - Cadastrar entrega")
    escreval(" 2 - Listar entregas")
+   escreval(" 3 - Consultar entrega")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -445,6 +461,7 @@ Inicio
    escreval("==================================================")
    escreval(" 1 - Cadastrar entrega")
    escreval(" 2 - Listar entregas")
+   escreval(" 3 - Consultar entrega")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -465,6 +482,8 @@ inicio
             cadastrar_entrega
          caso 2
             listar_entregas
+         caso 3
+            consultar_entrega
          caso 7
             exibir_matriz_distancias
          caso 10
