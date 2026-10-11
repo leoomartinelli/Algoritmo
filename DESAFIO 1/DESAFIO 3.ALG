@@ -7,7 +7,6 @@ Algoritmo "Desafio 3"
 
 
 const
-max_produtos = 10
 MAX_ENTREGAS = 30
 MAX_REGIOES = 5
 MAX_PERCURSO = 10
@@ -506,9 +505,9 @@ inicio
    entregas[a].prioridade <- entregas[b].prioridade
    entregas[b].prioridade <- aux_inteiro
 
-   aux_inteiro <- entregas[a].distancia
+   aux_real <- entregas[a].distancia
    entregas[a].distancia <- entregas[b].distancia
-   entregas[b].distancia <- aux_inteiro
+   entregas[b].distancia <- aux_real
 
    aux_inteiro <- entregas[a].status
    entregas[a].status <- entregas[b].status
@@ -752,25 +751,6 @@ fimprocedimento
 
 procedimento exibir_menu
 inicio
-   limpatela
-   escreval("==================================================")
-   escreval("   SISTEMA DE GERENCIAMENTO DE ENTREGAS")
-   escreval("==================================================")
-   escreval(" 1 - Cadastrar entrega")
-   escreval(" 2 - Listar entregas")
-   escreval(" 3 - Consultar entrega")
-   escreval(" 4 - Exibir fila de despacho")
-   escreval(" 5 - Iniciar transporte")
-   escreval(" 6 - Finalizar entrega")
-   escreval(" 7 - Exibir matriz de distancias")
-   escreval(" 8 - Exibir estatisticas")
-   escreval(" 9 - Calcular percurso recursivamente")
-   escreval("10 - Encerrar sistema")
-   escreval("==================================================")
-   escreva("Opcao: ")
-fimprocedimento
-
-Inicio
    limpatela
    escreval("==================================================")
    escreval("   SISTEMA DE GERENCIAMENTO DE ENTREGAS")
