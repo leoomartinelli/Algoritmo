@@ -601,6 +601,100 @@ inicio
    alterar_status(ENTREGUE)
 fimprocedimento
 
+procedimento exibir_estatisticas
+var
+   i, r: inteiro
+   qtd_aguardando, qtd_transporte, qtd_entregues: inteiro
+   qtd_urgentes, qtd_prioritarias, qtd_normais: inteiro
+   pos_maior_valor, pos_maior_peso, pos_maior_distancia, regiao_top: inteiro
+   peso_total, valor_total, custo_total: real
+   entregas_por_regiao: vetor[1..MAX_REGIOES] de inteiro
+inicio
+   escreval("============ ESTATISTICAS ============")
+   se (qtd_entregas = 0) entao
+      escreval("Nenhuma entrega cadastrada.")
+   senao
+      qtd_aguardando <- 0
+      qtd_transporte <- 0
+      qtd_entregues <- 0
+      qtd_urgentes <- 0
+      qtd_prioritarias <- 0
+      qtd_normais <- 0
+      peso_total <- 0
+      valor_total <- 0
+      custo_total <- 0
+      pos_maior_valor <- 1
+      pos_maior_peso <- 1
+      pos_maior_distancia <- 1
+      para r de 1 ate MAX_REGIOES faca
+         entregas_por_regiao[r] <- 0
+      fimpara
+
+      para i de 1 ate qtd_entregas faca
+         se (entregas[i].status = AGUARDANDO) entao
+            qtd_aguardando <- qtd_aguardando + 1
+         senao
+            se (entregas[i].status = EM_TRANSPORTE) entao
+               qtd_transporte <- qtd_transporte + 1
+            senao
+               qtd_entregues <- qtd_entregues + 1
+            fimse
+         fimse
+
+         se (entregas[i].prioridade = URGENTE) entao
+            qtd_urgentes <- qtd_urgentes + 1
+         senao
+            se (entregas[i].prioridade = PRIORITARIA) entao
+               qtd_prioritarias <- qtd_prioritarias + 1
+            senao
+               qtd_normais <- qtd_normais + 1
+            fimse
+         fimse
+
+         peso_total <- peso_total + entregas[i].peso
+         valor_total <- valor_total + entregas[i].valor_mercadoria
+         custo_total <- custo_total + entregas[i].custo
+
+         se (entregas[i].valor_mercadoria > entregas[pos_maior_valor].valor_mercadoria) entao
+            pos_maior_valor <- i
+         fimse
+         se (entregas[i].peso > entregas[pos_maior_peso].peso) entao
+            pos_maior_peso <- i
+         fimse
+         se (entregas[i].distancia > entregas[pos_maior_distancia].distancia) entao
+            pos_maior_distancia <- i
+         fimse
+
+         entregas_por_regiao[entregas[i].destino] <- entregas_por_regiao[entregas[i].destino] + 1
+      fimpara
+
+      regiao_top <- 1
+      para r de 2 ate MAX_REGIOES faca
+         se (entregas_por_regiao[r] > entregas_por_regiao[regiao_top]) entao
+            regiao_top <- r
+         fimse
+      fimpara
+
+      escreval("Total de entregas.........: ", qtd_entregas)
+      escreval("Aguardando................: ", qtd_aguardando)
+      escreval("Em transporte.............: ", qtd_transporte)
+      escreval("Entregues.................: ", qtd_entregues)
+      escreval("Urgentes..................: ", qtd_urgentes)
+      escreval("Prioritarias..............: ", qtd_prioritarias)
+      escreval("Normais...................: ", qtd_normais)
+      escreval("Peso total transportado...: ", peso_total:10:2, " kg")
+      escreval("Media de peso.............: ", (peso_total / qtd_entregas):10:2, " kg")
+      escreval("Valor total mercadorias...: R$ ", valor_total:10:2)
+      escreval("Valor medio mercadorias...: R$ ", (valor_total / qtd_entregas):10:2)
+      escreval("Custo total estimado......: R$ ", custo_total:10:2)
+      escreval("Custo medio das entregas..: R$ ", (custo_total / qtd_entregas):10:2)
+      escreval("Entrega de maior valor....: cod ", entregas[pos_maior_valor].codigo, " (R$ ", entregas[pos_maior_valor].valor_mercadoria:10:2, ")")
+      escreval("Entrega de maior peso.....: cod ", entregas[pos_maior_peso].codigo, " (", entregas[pos_maior_peso].peso:8:2, " kg)")
+      escreval("Entrega de maior distancia: cod ", entregas[pos_maior_distancia].codigo, " (", entregas[pos_maior_distancia].distancia, " km)")
+      escreval("Regiao com mais entregas..: ", nomes_regioes[regiao_top], " (", entregas_por_regiao[regiao_top], " entrega(s))")
+   fimse
+fimprocedimento
+
 procedimento exibir_menu
 inicio
    limpatela
@@ -614,6 +708,7 @@ inicio
    escreval(" 5 - Iniciar transporte")
    escreval(" 6 - Finalizar entrega")
    escreval(" 7 - Exibir matriz de distancias")
+   escreval(" 8 - Exibir estatisticas")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
    escreva("Opcao: ")
@@ -631,6 +726,7 @@ Inicio
    escreval(" 5 - Iniciar transporte")
    escreval(" 6 - Finalizar entrega")
    escreval(" 7 - Exibir matriz de distancias")
+   escreval(" 8 - Exibir estatisticas")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
    escreva("Opcao: ")
@@ -660,6 +756,8 @@ inicio
             finalizar_entrega
          caso 7
             exibir_matriz_distancias
+         caso 8
+            exibir_estatisticas
          caso 10
             escreval("Sistema encerrado. Ate logo!")
          outrocaso
