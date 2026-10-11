@@ -695,6 +695,61 @@ inicio
    fimse
 fimprocedimento
 
+funcao distancia_percurso(posicao, ultima_posicao: inteiro): inteiro
+inicio
+   se (posicao >= ultima_posicao) entao
+      retorne 0
+   senao
+      escreval("  ", nomes_regioes[percurso[posicao]], " -> ", nomes_regioes[percurso[posicao + 1]], " = ", matriz_distancias[percurso[posicao], percurso[posicao + 1]], " km")
+      retorne matriz_distancias[percurso[posicao], percurso[posicao + 1]] + distancia_percurso(posicao + 1, ultima_posicao)
+   fimse
+fimfuncao
+
+procedimento calcular_percurso
+var
+   qtd_paradas, i, regiao_lida, total: inteiro
+   regiao_ok: inteiro
+inicio
+   escreval("============ PERCURSO RECURSIVO ============")
+   repita
+      escreva("Quantidade de regioes no percurso (", MIN_PERCURSO, " a ", MAX_PERCURSO, "): ")
+      leia(qtd_paradas)
+      se (qtd_paradas < MIN_PERCURSO) ou (qtd_paradas > MAX_PERCURSO) entao
+         escreval("ERRO: quantidade invalida.")
+      fimse
+   ate (qtd_paradas >= MIN_PERCURSO) e (qtd_paradas <= MAX_PERCURSO)
+
+   para i de 1 ate qtd_paradas faca
+      repita
+         escreval("")
+         escreval("Parada ", i, " de ", qtd_paradas)
+         ler_regiao("Regiao", regiao_lida)
+         regiao_ok <- VALIDA
+         se (i > 1) entao
+            se (regiao_lida = percurso[i - 1]) entao
+               escreval("ERRO: a regiao nao pode ser igual a parada anterior.")
+               regiao_ok <- INVALIDA
+            fimse
+         fimse
+      ate (regiao_ok = VALIDA)
+      percurso[i] <- regiao_lida
+   fimpara
+
+   escreval("")
+   escreva("Percurso: ")
+   para i de 1 ate qtd_paradas faca
+      escreva(nomes_regioes[percurso[i]])
+      se (i < qtd_paradas) entao
+         escreva(" -> ")
+      fimse
+   fimpara
+   escreval("")
+   escreval("Trechos:")
+
+   total <- distancia_percurso(1, qtd_paradas)
+   escreval("Distancia total: ", total, " km")
+fimprocedimento
+
 procedimento exibir_menu
 inicio
    limpatela
@@ -709,6 +764,7 @@ inicio
    escreval(" 6 - Finalizar entrega")
    escreval(" 7 - Exibir matriz de distancias")
    escreval(" 8 - Exibir estatisticas")
+   escreval(" 9 - Calcular percurso recursivamente")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
    escreva("Opcao: ")
@@ -727,6 +783,7 @@ Inicio
    escreval(" 6 - Finalizar entrega")
    escreval(" 7 - Exibir matriz de distancias")
    escreval(" 8 - Exibir estatisticas")
+   escreval(" 9 - Calcular percurso recursivamente")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
    escreva("Opcao: ")
@@ -758,6 +815,8 @@ inicio
             exibir_matriz_distancias
          caso 8
             exibir_estatisticas
+         caso 9
+            calcular_percurso
          caso 10
             escreval("Sistema encerrado. Ate logo!")
          outrocaso
