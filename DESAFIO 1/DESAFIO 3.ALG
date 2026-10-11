@@ -595,6 +595,12 @@ inicio
    alterar_status(EM_TRANSPORTE)
 fimprocedimento
 
+procedimento finalizar_entrega
+inicio
+   escreval("============ FINALIZAR ENTREGA ============")
+   alterar_status(ENTREGUE)
+fimprocedimento
+
 procedimento exibir_menu
 inicio
    limpatela
@@ -606,6 +612,7 @@ inicio
    escreval(" 3 - Consultar entrega")
    escreval(" 4 - Exibir fila de despacho")
    escreval(" 5 - Iniciar transporte")
+   escreval(" 6 - Finalizar entrega")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -622,6 +629,7 @@ Inicio
    escreval(" 3 - Consultar entrega")
    escreval(" 4 - Exibir fila de despacho")
    escreval(" 5 - Iniciar transporte")
+   escreval(" 6 - Finalizar entrega")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -648,6 +656,8 @@ inicio
             exibir_fila_despacho
          caso 5
             iniciar_transporte
+         caso 6
+            finalizar_entrega
          caso 7
             exibir_matriz_distancias
          caso 10
