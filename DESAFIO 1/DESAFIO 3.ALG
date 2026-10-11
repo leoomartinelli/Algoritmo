@@ -44,6 +44,8 @@ NAO_ENCONTRADO = 0
 OPCAO_SAIR = 10
 ANTES = 1
 DEPOIS = 0
+VALIDA = 1
+INVALIDA = 0
 
 tipo
 
@@ -548,6 +550,51 @@ inicio
    fimse
 fimprocedimento
 
+funcao transicao_valida(status_atual, novo_status: inteiro): inteiro
+var
+   resultado: inteiro
+inicio
+   resultado <- INVALIDA
+   se ((status_atual = AGUARDANDO) e (novo_status = EM_TRANSPORTE)) ou ((status_atual = EM_TRANSPORTE) e (novo_status = ENTREGUE)) entao
+      resultado <- VALIDA
+   fimse
+   retorne resultado
+fimfuncao
+
+procedimento alterar_status(novo_status: inteiro)
+var
+   codigo_busca, posicao, status_atual: inteiro
+inicio
+   escreva("Informe o codigo da entrega: ")
+   leia(codigo_busca)
+   posicao <- localizar_entrega(codigo_busca)
+   se (posicao = NAO_ENCONTRADO) entao
+      escreval("ERRO: Entrega nao encontrada.")
+   senao
+      status_atual <- entregas[posicao].status
+      se (transicao_valida(status_atual, novo_status) = VALIDA) entao
+         entregas[posicao].status <- novo_status
+         escreval("Status alterado: ", nome_status(status_atual), " -> ", nome_status(novo_status))
+      senao
+         se (status_atual = ENTREGUE) entao
+            escreval("ERRO: a entrega ja foi concluida e nao pode ser modificada.")
+         senao
+            se (status_atual = AGUARDANDO) e (novo_status = ENTREGUE) entao
+               escreval("ERRO: a entrega ainda esta AGUARDANDO. Inicie o transporte antes de finalizar.")
+            senao
+               escreval("ERRO: a entrega ja foi enviada (EM TRANSPORTE).")
+            fimse
+         fimse
+      fimse
+   fimse
+fimprocedimento
+
+procedimento iniciar_transporte
+inicio
+   escreval("============ INICIAR TRANSPORTE ============")
+   alterar_status(EM_TRANSPORTE)
+fimprocedimento
+
 procedimento exibir_menu
 inicio
    limpatela
@@ -558,6 +605,7 @@ inicio
    escreval(" 2 - Listar entregas")
    escreval(" 3 - Consultar entrega")
    escreval(" 4 - Exibir fila de despacho")
+   escreval(" 5 - Iniciar transporte")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -573,6 +621,7 @@ Inicio
    escreval(" 2 - Listar entregas")
    escreval(" 3 - Consultar entrega")
    escreval(" 4 - Exibir fila de despacho")
+   escreval(" 5 - Iniciar transporte")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -597,6 +646,8 @@ inicio
             consultar_entrega
          caso 4
             exibir_fila_despacho
+         caso 5
+            iniciar_transporte
          caso 7
             exibir_matriz_distancias
          caso 10
