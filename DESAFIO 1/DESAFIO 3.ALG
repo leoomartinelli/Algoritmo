@@ -42,6 +42,8 @@ ACRESCIMO_URGENTE = 0.30
 
 NAO_ENCONTRADO = 0
 OPCAO_SAIR = 10
+ANTES = 1
+DEPOIS = 0
 
 tipo
 
@@ -439,6 +441,113 @@ inicio
    fimse
 fimprocedimento
 
+funcao deve_preceder(a, b: inteiro): inteiro
+var
+   resultado: inteiro
+inicio
+   resultado <- DEPOIS
+   se (entregas[a].status = AGUARDANDO) xou (entregas[b].status = AGUARDANDO) entao
+      se (entregas[a].status = AGUARDANDO) entao
+         resultado <- ANTES
+      fimse
+   senao
+      se (entregas[a].prioridade < entregas[b].prioridade) entao
+         resultado <- ANTES
+      senao
+         se (entregas[a].prioridade = entregas[b].prioridade) e (entregas[a].valor_mercadoria > entregas[b].valor_mercadoria) entao
+            resultado <- ANTES
+         senao
+            se (entregas[a].prioridade = entregas[b].prioridade) e (entregas[a].valor_mercadoria = entregas[b].valor_mercadoria) e (entregas[a].peso > entregas[b].peso) entao
+               resultado <- ANTES
+            senao
+               se (entregas[a].prioridade = entregas[b].prioridade) e (entregas[a].valor_mercadoria = entregas[b].valor_mercadoria) e (entregas[a].peso = entregas[b].peso) e (entregas[a].codigo < entregas[b].codigo) entao
+                  resultado <- ANTES
+               fimse
+            fimse
+         fimse
+      fimse
+   fimse
+   retorne resultado
+fimfuncao
+
+procedimento trocar_entregas(a, b: inteiro)
+var
+   aux_inteiro: inteiro
+   aux_real: real
+   aux_texto: caractere
+inicio
+   aux_inteiro <- entregas[a].codigo
+   entregas[a].codigo <- entregas[b].codigo
+   entregas[b].codigo <- aux_inteiro
+
+   aux_texto <- entregas[a].destinatario
+   entregas[a].destinatario <- entregas[b].destinatario
+   entregas[b].destinatario <- aux_texto
+
+   aux_inteiro <- entregas[a].origem
+   entregas[a].origem <- entregas[b].origem
+   entregas[b].origem <- aux_inteiro
+
+   aux_inteiro <- entregas[a].destino
+   entregas[a].destino <- entregas[b].destino
+   entregas[b].destino <- aux_inteiro
+
+   aux_real <- entregas[a].peso
+   entregas[a].peso <- entregas[b].peso
+   entregas[b].peso <- aux_real
+
+   aux_real <- entregas[a].valor_mercadoria
+   entregas[a].valor_mercadoria <- entregas[b].valor_mercadoria
+   entregas[b].valor_mercadoria <- aux_real
+
+   aux_inteiro <- entregas[a].prioridade
+   entregas[a].prioridade <- entregas[b].prioridade
+   entregas[b].prioridade <- aux_inteiro
+
+   aux_inteiro <- entregas[a].distancia
+   entregas[a].distancia <- entregas[b].distancia
+   entregas[b].distancia <- aux_inteiro
+
+   aux_inteiro <- entregas[a].status
+   entregas[a].status <- entregas[b].status
+   entregas[b].status <- aux_inteiro
+
+   aux_real <- entregas[a].custo
+   entregas[a].custo <- entregas[b].custo
+   entregas[b].custo <- aux_real
+fimprocedimento
+
+procedimento ordenar_entregas
+var
+   i, j: inteiro
+inicio
+   para i de qtd_entregas ate 2 passo -1 faca
+      para j de 1 ate i - 1 faca
+         se (deve_preceder(j + 1, j) = ANTES) entao
+            trocar_entregas(j, j + 1)
+         fimse
+      fimpara
+   fimpara
+fimprocedimento
+
+procedimento exibir_fila_despacho
+var
+   i, posicao_fila: inteiro
+inicio
+   escreval("============ FILA DE DESPACHO ============")
+   ordenar_entregas
+   posicao_fila <- 0
+   para i de 1 ate qtd_entregas faca
+      se (entregas[i].status = AGUARDANDO) entao
+         posicao_fila <- posicao_fila + 1
+         escreval(posicao_fila, "o | Cod: ", entregas[i].codigo, " | ", nome_prioridade(entregas[i].prioridade), " | Valor: R$ ", entregas[i].valor_mercadoria:10:2, " | Peso: ", entregas[i].peso:8:2, " kg | ", entregas[i].destinatario)
+      fimse
+   fimpara
+   se (posicao_fila = 0) entao
+      escreval("Nenhuma entrega aguardando transporte.")
+   fimse
+fimprocedimento
+
 procedimento exibir_menu
 inicio
    limpatela
@@ -448,6 +557,7 @@ inicio
    escreval(" 1 - Cadastrar entrega")
    escreval(" 2 - Listar entregas")
    escreval(" 3 - Consultar entrega")
+   escreval(" 4 - Exibir fila de despacho")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -462,6 +572,7 @@ Inicio
    escreval(" 1 - Cadastrar entrega")
    escreval(" 2 - Listar entregas")
    escreval(" 3 - Consultar entrega")
+   escreval(" 4 - Exibir fila de despacho")
    escreval(" 7 - Exibir matriz de distancias")
    escreval("10 - Encerrar sistema")
    escreval("==================================================")
@@ -484,6 +595,8 @@ inicio
             listar_entregas
          caso 3
             consultar_entrega
+         caso 4
+            exibir_fila_despacho
          caso 7
             exibir_matriz_distancias
          caso 10
